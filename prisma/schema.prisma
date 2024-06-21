@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+enum FeatureType {
+  SELECT
+  COUNTER
+  CHECKBOX
+}
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String
+  role      Role     @default(CLIENT)
+  orders    Order[]
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String
+  role      Role     @default(CLIENT)
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String
+  image    String?
+  slug     String    @unique
+  products Product[]
+}
+
+model Product {
+  id               Int                 @id @default(autoincrement())
+  name             String
+  description      String
+  shortDescription String
+  price            Float
+  slug             String              @unique
+  discountPrice    Float
+  rating           Float?              @default(0.0)
+  mainImage        String?
+  secondaryImages  Json?
+  categoryId       Int
+  category         Category            @relation(fields: [categoryId], references: [id])
+  extras           Extra[]
+  orderDetails     OrderDetail[]
+  features         ProductFeature[]
+}
+
+model Feature {
+  id         Int                 @id @default(autoincrement())
+  name       String
+  type       FeatureType
+  options    FeatureOption[]
+  products   ProductFeature[]
+}
+
+model FeatureOption {
+  id           Int       @id @default(autoincrement())
+  featureId    Int
+  feature      Feature    @relation(fields: [featureId], references: [id])
+  name         String
+  price        Float
+  maxQuantity  Int?
+}
+
+model ProductFeature {
+  id           Int       @id @default(autoincrement())
+  productId    Int
+  product      Product    @relation(fields: [productId], references: [id])
+  featureId    Int
+  feature      Feature    @relation(fields: [featureId], references: [id])
+}
+
+model Extra {
+  id         Int      @id @default(autoincrement())
+  name       String
+  price      Float
+  quantity   Int
+  productId  Int
+  product    Product @relation(fields: [productId], references: [id])
+}
+
+model Order {
+  id          Int          @id @default(autoincrement())
+  clientId    Int?
+  client      Client?      @relation(fields: [clientId], references: [id])
+  total       Float
+  status      String
+  date        DateTime     @default(now())
+  deliveryLocation String
+  details     OrderDetail[]
+}
+
+model OrderDetail {
+  id          Int       @id @default(autoincrement())
+  orderId     Int
+  order       Order     @relation(fields: [orderId], references: [id])
+  productId   Int
+  product     Product   @relation(fields: [productId], references: [id])
+  quantity    Int
+  price       Float
+  extras      Json
+}
