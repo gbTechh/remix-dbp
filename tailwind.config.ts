@@ -27,15 +27,23 @@ export default {
         contrast: "#C0C0C0",
         shopprimary: "#FFAE4A",
         shopinputs: "#EFEFEF",
+
+        whitecontrast: "#F3F3F3",
+        fprimary: "#FFC300",
       },
       textColor: {
         primary: "#FAFAFA",
         contrast: "#C0C0C0",
         shopcontrast: "#7E7E7E",
+
+        fcontrast: "#5C5C5C",
+        fprimary: "#2B2B2B",
       },
       fontFamily: {
         nunito: ["Nunito", "sans-serif"],
         raleway: ["Raleway", "sans-serif"],
+        dmserif: ["DM Serif Text", "serif"],
+        biryani: ["Biryani", "sans-serif"],
       },
     },
   },

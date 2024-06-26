@@ -21,7 +21,7 @@ export class CategoryServices extends Mapped<CategoryResponse, ICategory> {
   }
   async getCategoryById(id: number) {
     const category = await this.category.getCategoryById(id);   
-    
+
     if (category === null) {
       return null;
     }
@@ -72,5 +72,57 @@ export class CategoryServices extends Mapped<CategoryResponse, ICategory> {
         data: null,
       };
     }
+  }
+
+  async updateCategory(data: ICategoryFormOrUpdate, id: number) {
+    try {
+      const errors = validateFormErrors<ICategoryFormOrUpdate>(data);
+
+      if (Object.keys(errors).length > 0) {
+        const errorObj: TError<ICategoryFormOrUpdate> = {
+          message: "Verifica los errores",
+          hasError: true,
+          body: errors,
+          state: "idle",
+        };
+        return { error: errorObj, data: null };
+      }
+
+      const dataFormatted: ICategoryFormOrUpdate = {
+        name: data.name!,
+        slug: data.slug!,
+        image: data?.image,
+      };
+
+      const existCategory = await this.category.getCategoryById(id);
+      if (existCategory) {
+        const categoryUpdated = await this.category.updateCategoryByIdOrSlug(
+          id,
+          {
+            id,
+          },
+          dataFormatted
+        );
+        if (categoryUpdated.error === null) {
+          return { error: null, data: categoryUpdated.category };
+        } else {
+          return { error: categoryUpdated.error, data: null };
+        }
+      } else {
+        return {
+          error: {
+            hasError: true,
+            message: "No existe la categoría",
+          },
+          data: null,
+        };
+      }
+    } catch (error) {
+      console.log(error);
+      return {
+        error: error as TError<ICategoryFormOrUpdate>,
+        data: null,
+      };
+    }  
   }
 }

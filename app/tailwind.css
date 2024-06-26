@@ -53,6 +53,11 @@ input:-webkit-autofill {
   gap: 0.75rem;
   display: grid;
 }
+.form-4-cols-products{
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, max(200px, calc(20% - 1rem))), 1fr));
+  gap: 1rem;
+  display: grid;
+}
 .form-4-cols{
   grid-template-columns: repeat(auto-fill, minmax(min(100%, max(150px, calc(12% - 10px))), 1fr));
   gap: 10px;
@@ -207,8 +212,8 @@ input::placeholder {
   scrollbar-width: thin;
 }
 
-body, html {
-   scrollbar-color: #242425 #131216;
+.body-admin {
+  scrollbar-color: #242425 #131216;
   scrollbar-width: thin;
 }
 

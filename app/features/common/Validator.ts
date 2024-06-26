@@ -80,6 +80,14 @@ export class Validator {
     return this;
   }
 
+  isMinValue(min: number, obj: Tobj) {
+    if (this.isValid && typeof this.value === "number") {
+      this.isValid = this.value >= min;
+      if (!this.isValid) this.error = { ...this.error, ...obj };
+    }
+    return this;
+  }
+  
   isSlugValid(obj: Tobj) {
     if (this.isValid) {
       const re = /^[A-Za-z0-9-ñÑ]+$/;

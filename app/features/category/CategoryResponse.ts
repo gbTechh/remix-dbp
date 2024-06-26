@@ -17,6 +17,6 @@ export class CategoryResponse {
     this.id = id;
     this.name = name;
     this.slug = slug;
-    this.image = image ? `/uploads/${image}` : '/images/no-image.jpg';
+    this.image = image ? `/uploads/${image}` : '';
   }
 }

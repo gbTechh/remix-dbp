@@ -7,7 +7,7 @@ type Props = {
   as?: keyof JSX.IntrinsicElements;
   children: React.ReactNode;
   type?: 'big' | 'title' | 'subtitle' | 'base' | 'custom';
-  color?: 'shopcontrast' | 'black' | 'primary' | 'contrast' | 'error' | 'success' | 'warning' | 'grey' | 'custom'
+  color?: 'fprimary' | 'shopcontrast' | 'black' | 'primary' | 'contrast' | 'error' | 'success' | 'warning' | 'grey' | 'custom'
   size?: 'xl' | 'lg' | 'md' | 'sm' | 'xs' | 'custom' | '14'
   className?: string;
   
@@ -26,6 +26,7 @@ export const Text: React.FC<Props> = ({ size= 'md' ,as = 'p', color='primary', t
     {
       "text-black": color === "black",
       "text-primary": color === "primary",
+      "text-fprimary": color === "fprimary",
       "text-contrast": color === "contrast",
       "text-shopcontrast": color === "shopcontrast",
       "text-red-500": color === "error",

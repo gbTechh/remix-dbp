@@ -6,6 +6,7 @@ export * from "./DropdownMenu";
 export * from './Spacer'
 export * from './Table'
 export * from './Text'
+export * from './TextF'
 export * from './Toggle'
 export * from './form'
 export * from './Alert'
@@ -19,3 +20,4 @@ export * from './Spinner'
 export * from './shop'
 
 export * from './hooks'
+export * from './CardProduct'

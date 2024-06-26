@@ -1,40 +1,23 @@
-# Welcome to Remix!
+# proyectocreado con astro
 
-- 📖 [Remix docs](https://remix.run/docs)
+Este proyecto consiste en un gestor de menus para un restaurantes o algun negocio que quiera vender sus comidas y exponer sus productos
 
-## Development
+# Integrantes
+- Rodrigo Silva Murillo
+- Dianiela Perales Estada
+- Jose Cornejo Castro
 
-Run the dev server:
 
-```shellscript
-npm run dev
-```
+![Link de github](https://github.com/gbTechh/remix-dbp)
 
-## Deployment
 
-First, build your app for production:
 
-```sh
-npm run build
-```
+## 🧞 Commands
 
-Then run the app in production mode:
 
-```sh
-npm start
-```
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `npm install`             | Installs dependencies                            |
+| `npx prisma migrate`             GEenrar base de datos      |
+| `npx prisma generate`           |          |
 
-Now you'll need to pick a host to deploy it to.
-
-### DIY
-
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-- `build/server`
-- `build/client`
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.

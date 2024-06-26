@@ -8,7 +8,6 @@ import { listCategories } from '~/features';
 
 
 
-
 const headers = [
   { key: 'id', label: 'ID' },
   { key: 'name', label: 'Nombre Categoría' },  
@@ -57,8 +56,16 @@ export default function AdminCategory() {
   const allCategories = categories.map((e) => {
     return {
       ...e,
-      image: e.image && <img src={e.image} alt={e.name} width={40} height={40} className='object-cover aspect-square rounded-lg bg-zinc-600' />
-    }
+      image: (
+        <img
+          src={e.image || "/images/no-image.jpg"}
+          alt={e.name}
+          width={40}
+          height={40}
+          className="object-cover aspect-square rounded-lg bg-zinc-600"
+        />
+      ),
+    };
   })
 
 
