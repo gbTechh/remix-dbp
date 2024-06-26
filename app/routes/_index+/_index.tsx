@@ -1,7 +1,8 @@
 import type { LoaderFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { MdArrowOutward } from "react-icons/md";
-import { Spacer, Text, TextF } from "~/components";
+import { CardProduct, Spacer, Text, TextF } from "~/components";
+import { listProducts } from "~/features/product";
 
 
 export const meta: MetaFunction = () => {
@@ -12,11 +13,11 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  return null
+  return listProducts(request)
 };
 
 export default function Home() {
-  const categories = useLoaderData<typeof loader>();
+  const products = useLoaderData<typeof loader>();
 
   return (
     <>
@@ -58,9 +59,9 @@ export default function Home() {
         </Link>
         <Spacer y={12} />
         <section className="flex flex-wrap gap-8 justify-center items-center">
-          {/* {bestSeller.map((p) => (
-            <Card data={{ ...p, href: "/comidas/" + p.id }} />
-          ))} */}
+          {products.slice(0,4).map((p) => (
+            <CardProduct key={p.id} data={p} />
+          ))}
         </section>
       </main>
     </>

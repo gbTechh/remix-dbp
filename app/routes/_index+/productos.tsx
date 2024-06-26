@@ -80,7 +80,7 @@ export default function Products() {
           <ul className="flex gap-4 overflow-x-scroll">
             <li className="w-full min-w-[120px] max-w-[150px] flex items-center justify-center flex-col gap-4 bg-yellow-400 bg-opacity-10 border-[1px] border-yellow-500 rounded-3xl p-3">
               <img
-                src="/allfoods.png"
+                src="/images/allfoods.png"
                 className="aspect-square w-14 shadow-2xl rounded-full object-cover"
               />
               <Link to={`/productos`} className="w-full">

@@ -22,26 +22,7 @@ export const menu = [
     name: "productos",
     icon: <IProduct w={15} h={15} />
   },
-  {
-    path: "/admin/etiquetas",
-    name: "etiquetas",
-    icon: <ITag w={15} h={15} />
-  },
-  {
-    path: "/admin/media",
-    name: "media",
-    icon: <IMedia w={15} h={15} />
-  },
-  {
-    path: "/admin/ordenes",
-    name: "órdenes",
-    icon: <AiOutlineDollar width={15} height={15} className="text-white" />
-  },
-  {
-    path: "/admin/clientes",
-    name: "clientes",
-    icon: <LuUser2 width={15} height={15} className="text-white" />
-  },
+  
 ]
 export const menuSetting = [
   {

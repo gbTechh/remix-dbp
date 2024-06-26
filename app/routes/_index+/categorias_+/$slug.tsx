@@ -23,7 +23,7 @@ export default function Products() {
     <>
       <main>
         <div className="rounded-2xl relative  overflow-hidden max-h-[150px] sm:max-h-[100px]">
-          <div className="lg:aspect-[321/25] absolute top-0 left-0 w-full bg-slate-800 bg-opacity-70 lg:h-[100px] h-full" ></div>
+          <div className="lg:aspect-[321/25] absolute top-0 left-0 w-full bg-slate-800 bg-opacity-70 lg:h-[100px] h-full"></div>
           <img className="w-full h-full object-cover" src="/images/food.jpg" />
           <div className="absolute flex  left-0 top-0 w-full h-full p-6 justify-between sm:items-center ">
             <div className="pr-2">
@@ -81,7 +81,7 @@ export default function Products() {
           <ul className="flex gap-4 overflow-x-scroll">
             <li className="w-full min-w-[120px] max-w-[150px] flex items-center justify-center flex-col gap-4 bg-yellow-400 bg-opacity-10 border-[1px] border-yellow-500 rounded-3xl p-3">
               <img
-                src="/allfoods.png"
+                src="/images/allfoods.png"
                 className="aspect-square w-14 shadow-2xl rounded-full object-cover"
               />
               <Link to={`/productos`} className="w-full">

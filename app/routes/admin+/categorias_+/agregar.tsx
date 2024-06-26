@@ -1,4 +1,4 @@
-import { Form, useLoaderData, useNavigation, useActionData, useNavigate, useSubmit } from '@remix-run/react';
+import { Form, useLoaderData, useNavigation, useActionData, useNavigate, useSubmit, redirect } from '@remix-run/react';
 
 import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { IoAdd } from "react-icons/io5";
@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { ROUTES } from '~/utils';
 import { Alert, Box, Button, Input, ModalEdit, Select, Spacer, Text, Toggle } from '~/components';
 import { THandleResponse } from '~/features/common/handleResponse';
-import { CategoryResponse, actionAddCategory } from '~/features';
+import { CategoryResponse, actionAddCategory, verifyAuth } from '~/features';
 import { ICategoryFormOrUpdate } from '~/interfaces';
 
 
@@ -21,6 +21,8 @@ import { ICategoryFormOrUpdate } from '~/interfaces';
 // }
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const isAuth = await verifyAuth(request);
+  if (!isAuth) return redirect(ROUTES.ADMIN_LOGIN);
   return null;
 };
 

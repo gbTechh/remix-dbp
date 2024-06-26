@@ -9,6 +9,8 @@ export * from './OrderDetail'
 export * from './Product'
 export * from './ProductFeature'
 export * from './Role'
+export * from './Auth'
+export * from './User'
 
 
 export * from './TError'

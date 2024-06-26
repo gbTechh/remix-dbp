@@ -7,15 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  ADMIN
-  CLIENT
-}
 
 enum FeatureType {
   SELECT
   COUNTER
   CHECKBOX
+}
+
+enum Role {
+  ADMIN
+  CLIENT
 }
 
 model Client {

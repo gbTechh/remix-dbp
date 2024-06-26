@@ -3,6 +3,7 @@ import { CategoryResponse } from "../CategoryResponse";
 import { PrismaCategoryRepository } from "../model";
 import { CategoryServices } from "../Category.services";
 import { ROUTES } from "~/utils";
+import { verifyAuth } from "~/features/auth";
 
 export const listCategoryById = async (
   {
@@ -14,7 +15,9 @@ export const listCategoryById = async (
   // if (!hasPermission) {
   //   return redirect(ROUTES.BIENVENIDA);
   // }
-
+  const isAuth = await verifyAuth(request);
+  if (!isAuth) return redirect(ROUTES.ADMIN_LOGIN);
+  
   const { id } = params;
 
   if (typeof Number(id) !== "number" || isNaN(Number(id)) || Number(id) <= 0) {

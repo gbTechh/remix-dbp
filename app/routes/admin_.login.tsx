@@ -2,12 +2,13 @@ import React from "react";
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { Button, Input, Spacer, Text } from "../components";
+import { actionLoginAdmin } from "~/features";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   return null;
 }
 export const action = async ({request}: ActionFunctionArgs) => {
- 
+  return await actionLoginAdmin(request);
   
 }
 
