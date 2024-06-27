@@ -30,7 +30,7 @@ export function CardProduct({
     <div className="relative pt-[4rem] grid place-items-center ">
       <img
         src={
-          mainImage ? `/uploads/products/${mainImage}` : "/images/no-image.jpg"
+          mainImage
         }
         className="z-20  rounded-full w-[80%] aspect-square max-w-[120px] object-cover shadow-[rgba(0,_0,_0,_0.2)_0px_20px_30px_-7px] absolute top-0 mx-auto border-[1px] border-gray-100 "
       />
