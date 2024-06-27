@@ -98,6 +98,26 @@ export default function AdminAddCategory() {
     };
   });
 
+  const [imageState, setImageState] = useState<string>(productById.mainImage ?? '');
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
+      setImageState(file.name); // Set the filename or path as needed
+    }
+  };
+
+  const refInputFile = useRef<HTMLInputElement>(null);
+  const handleDeleteImage = () => {
+    if (refInputFile.current) {
+      refInputFile.current.value = "";
+      setImageState("");
+      setImagePreview(null);
+    }
+  };
+
 
   return (
     <div className="">
@@ -242,36 +262,34 @@ export default function AdminAddCategory() {
             error={actionData?.body?.error?.body?.categoryId as any}
           />
           <Spacer y={4} />
-          <div>
-            <label htmlFor="mainImage">
-              <Text as="span" size="sm">
-                Imagen Principal
-              </Text>
-            </label>
-            <Spacer y={4} />
-            <input
-              type="file"
-              name="mainImage"
-              id="mainImage"
-              className="w-full text-white text-[14px]"
+          <Text size="sm">Editar imagen:</Text>
+          <div className="w-32 h-32 relative aspect-square">
+            <img
+              className="object-cover w-full h-full aspect-square rounded-lg"
+              src={imagePreview || `${imageState}`}
             />
+            {imageState !== "" && (
+              <div className="bg-black/80 opacity-0 hover:opacity-100 grid place-items-center w-full h-full absolute top-0 left-0">
+                <Text
+                  color="error"
+                  as="button"
+                  className="w-full h-full"
+                  onClick={handleDeleteImage}
+                >
+                  Eliminar
+                </Text>
+              </div>
+            )}
           </div>
-          <Spacer y={4} />
-          <div>
-            <label htmlFor="secondaryImages">
-              <Text as="span" size="sm">
-                Imagenes Secundarias
-              </Text>
-            </label>
-            <Spacer y={4} />
-            <input
-              multiple
-              type="file"
-              name="secondaryImages"
-              id="secondaryImages"
-              className="w-full text-white text-[14px]"
-            />
-          </div>
+          <Spacer y={1} />
+
+          <input
+            ref={refInputFile}
+            type="file"
+            name="image"
+            onChange={handleFileChange}
+            className="text-white text-[14px]"
+          />
         </Box>
       </Form>
       {actionData?.hasError === true && (
