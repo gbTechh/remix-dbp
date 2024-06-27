@@ -1,8 +1,8 @@
 import fs from "fs/promises";
 import path from "path";
 
-export const deleteExistingImage = async (imageName: string) => {
-  const imagePath = path.join("public/uploads", imageName);
+export const deleteExistingImage = async (imageName: string, pathFile = 'public/uploads') => {
+  const imagePath = path.join(`${pathFile}`, imageName);
   try {
     await fs.unlink(imagePath);
   } catch (error) {

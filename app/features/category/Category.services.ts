@@ -125,4 +125,18 @@ export class CategoryServices extends Mapped<CategoryResponse, ICategory> {
       };
     }  
   }
+
+  async deleteCategory(categoryId: number): Promise<boolean>{
+    try {
+      const existCategory = await this.category.getCategoryById(categoryId);
+      if (existCategory) {
+        await this.category.deleteCategory(categoryId);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (error) {
+      return false;
+    }
+  }
 }

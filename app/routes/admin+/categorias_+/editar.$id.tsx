@@ -1,17 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from 'react';
-import { Form, useLoaderData, useNavigation, useActionData, useNavigate } from '@remix-run/react';
+import { Form, useLoaderData, useNavigation, useActionData, useNavigate, redirect } from '@remix-run/react';
 import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { IoAdd } from 'react-icons/io5';
 import { useForm } from '~/hooks';
 import { ROUTES } from '~/utils';
 import { Alert, Box, Button, Input, ModalEdit, Select, Spacer, Text, Toggle } from '~/components';
-import { THandleResponse, actionEditCategory, listCategoryById } from '~/features';
+import { THandleResponse, actionEditCategory, listCategoryById, verifyAuth } from '~/features';
 import { ICategory, ICategoryFormOrUpdate } from '~/interfaces';
 
 
 
 export const loader = async (context: LoaderFunctionArgs) => {
+  const isAuth = await verifyAuth(context.request);
+  if (!isAuth) return redirect(ROUTES.ADMIN_LOGIN);
   return await listCategoryById(context)
 };
 
@@ -157,7 +159,7 @@ export default function AdminAddCategory() {
             <div className="w-32 h-32 relative aspect-square">
               <img
                 className="object-cover w-full h-full aspect-square rounded-lg"
-                src={imagePreview || `${imageState || "/images/no-image.jpg"}`}
+                src={imagePreview || `${imageState}`}
               />
               {imageState !== "" && (
                 <div className="bg-black/80 opacity-0 hover:opacity-100 grid place-items-center w-full h-full absolute top-0 left-0">

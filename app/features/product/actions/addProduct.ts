@@ -1,5 +1,5 @@
 
-import { FormDataRequest, handleResponse } from "~/features/common";
+import { FormDataRequest, PATH_PRODUCT, handleResponse } from "~/features/common";
 import {
   json,
   unstable_composeUploadHandlers as composeUploadHandlers,
@@ -44,7 +44,7 @@ export const actionAddProduct = async (request: Request) => {
 const handleFile = async (request: Request) => {
   const uploadHandler = composeUploadHandlers(
     createFileUploadHandler({
-      directory: "public/uploads/products",
+      directory: PATH_PRODUCT,
       maxPartSize: 2_000_000,
       file({ filename }) {
         filename = filename.replaceAll(" ", "-");

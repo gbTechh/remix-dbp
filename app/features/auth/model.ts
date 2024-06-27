@@ -13,7 +13,6 @@ export class PrismaAuthRepository implements AuthRepository {
       
     });
     if (staff) {
-     
       return staff;
     } else {
       return null;

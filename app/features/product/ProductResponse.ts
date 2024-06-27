@@ -10,7 +10,7 @@ export class ProductResponse {
   price: number | null;
   discountPrice: number | null;
   rating: number | null | null;
-  mainImage: string | null;
+  mainImage: string;
   secondaryImages: string[] | [] | null;
   categoryId: number | null;
 
@@ -34,7 +34,7 @@ export class ProductResponse {
     this.categoryId = categoryId;
     this.description = description;
     this.discountPrice = discountPrice;
-    this.mainImage = mainImage;
+    this.mainImage = mainImage ? `/uploads/products/${mainImage}` : "/images/no-image.jpg";;
     this.price = price;
     this.rating = rating;
     this.secondaryImages = secondaryImages;

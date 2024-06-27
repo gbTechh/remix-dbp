@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import { Form, useActionData, useLoaderData, useLocation, useNavigate } from '@remix-run/react';
+import { Form, redirect, useActionData, useLoaderData, useLocation, useNavigate } from '@remix-run/react';
 import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { IoAdd } from "react-icons/io5";
 import { Alert, Button, IActionOption, ModalDelete, Spacer, Table, Text } from '~/components';
 import { ROUTES } from '~/utils';
 import { listProducts } from '~/features/product';
+import { verifyAuth } from '~/features';
 
 
 
 const headers = [
   { key: 'id', label: 'ID' },
-  { key: 'name', label: 'Nombre Categoría' },  
+  { key: 'name', label: 'Nombre Producto' },  
   { key: 'slug', label: 'Slug' },
   {
     key: 'image',
@@ -19,6 +20,8 @@ const headers = [
 ]
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
+  const isAuth = await verifyAuth(request);
+  if (!isAuth) return redirect(ROUTES.ADMIN_LOGIN);
   return listProducts(request);
 };
 
@@ -27,7 +30,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function AdminProduct() {
-  const categories = useLoaderData<typeof loader>()
+  const products = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
 
   const navigate = useNavigate();
@@ -53,12 +56,12 @@ export default function AdminProduct() {
   const success = location.state?.success;
   const messageAlert = location.state?.messageAlert;
 
-  const allCategories = categories.map((e) => {
+  const allProducts = products.map((e) => {
     return {
       ...e,
       image: (
         <img
-          src={e.mainImage ? `/uploads/products/${e.mainImage}` :  "/images/no-image.jpg"}
+          src={e.mainImage}
           alt={e.name ?? ''}
           width={40}
           height={40}
@@ -72,7 +75,12 @@ export default function AdminProduct() {
   return (
     <div className="">
       {success && (
-        <Alert title='Acción realizada con éxito' message={messageAlert} type="success" duration={3000} />
+        <Alert
+          title="Acción realizada con éxito"
+          message={messageAlert}
+          type="success"
+          duration={3000}
+        />
       )}
       {/* {actionData && (
         <Alert
@@ -108,7 +116,11 @@ export default function AdminProduct() {
         </div>
       </div>
       <Spacer y={6} />
-      <Table headers={headers} data={allCategories} actionOptions={actionOptions} />
+      <Table
+        headers={headers}
+        data={allProducts}
+        actionOptions={actionOptions}
+      />
       <Form
         method="DELETE"
         onSubmit={() => {
@@ -116,7 +128,7 @@ export default function AdminProduct() {
         }}
       >
         <input type="hidden" name="_method" value="DELETE" />
-        <input type="hidden" name="id" value={idCategory! ?? ''} />
+        <input type="hidden" name="id" value={idCategory! ?? ""} />
         <input type="hidden" name="action" value="delete" />
         <ModalDelete
           open={openModal}

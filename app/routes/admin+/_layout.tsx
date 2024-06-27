@@ -14,13 +14,28 @@ import { FaCaretDown } from "react-icons/fa";
 import { Box, Button, DividerX, DividerY, DropdownMenu, ISquare, Spacer, Text, Toggle } from "~/components";
 import { menu, menuSetting } from "~/utils/menu";
 import { ROUTES } from "~/utils";
+import { authenticator } from "~/features";
+import { IAuthStaff } from "~/interfaces";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  return null;
+    
+  const user = (await authenticator.isAuthenticated(request, {
+    failureRedirect: ROUTES.ADMIN_LOGIN,
+  })) as IAuthStaff | null;
+  return { user };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
+  const form = await request.formData();
+  const action = form.get("action");
 
+  switch (action) {
+    case "logout":
+      await authenticator.logout(request, { redirectTo: ROUTES.ADMIN_LOGIN });
+      break;
+    default:
+      return null;
+  }
 };
 
 const HeaderMenu = ({ name }: { name: string }) => {
@@ -41,6 +56,8 @@ const HeaderMenu = ({ name }: { name: string }) => {
 };
 
 export default function AdminLayout() {
+  const { user } = useLoaderData<typeof loader>();
+  console.log({user})
   const [isVisible, setIsVisible] = useState(true);
 
   const matches = useMatches();
@@ -54,14 +71,13 @@ export default function AdminLayout() {
 
   const currentPath = paths.at(-1);
   // const header = <HeaderMenu name={user?.full_name.split(" ")[0] ?? "user"} />;
-  const header = <HeaderMenu name={"user"} />;
+  const header = <HeaderMenu name={user?.name!} />;
 
   const [openSetting, setOpenSetting] = useState(false);
   const handleButtonSetting = () => {
     setOpenSetting(!openSetting);
   };
 
-  const user = null;
   return (
     <div className="bg-gradient-to-r from-gradientstart to-gradientbuttonstart h-full w-full min-h-screen flex ">
       <aside
@@ -147,13 +163,6 @@ export default function AdminLayout() {
             <div className=" items-center justify-center flex">
               <DropdownMenu topHead={header} pdrop="p-0" wdrop="min-w-[150px]">
                 <ul className="py-1">
-                  <Text
-                    as="li"
-                    size="xs"
-                    className="p-2 px-4 hover:bg-buttonprimary transition-all"
-                  >
-                    Configuración
-                  </Text>
                   <Text
                     as="li"
                     size="xs"

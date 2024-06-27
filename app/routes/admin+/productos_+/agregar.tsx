@@ -1,5 +1,6 @@
 import {
   Form,
+  redirect,
   useActionData,
   useLoaderData,
   useNavigate,
@@ -9,7 +10,7 @@ import {
 import { useEffect, useState } from "react";
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { IoAdd } from "react-icons/io5";
-import { THandleResponse } from "~/features";
+import { THandleResponse, verifyAuth } from "~/features";
 import { ProductResponse, actionAddProduct, addProductPage } from "~/features/product";
 import { IProductFormOrUpdate } from "~/interfaces";
 import { Alert, Box, Button, IAddImage, Input, OptionsProps, RichText, Select, Spacer, Text, TypeMultiselectData, useMultiSelect } from "~/components";
@@ -17,6 +18,8 @@ import { ROUTES } from "~/utils";
 
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const isAuth = await verifyAuth(request);
+  if (!isAuth) return redirect(ROUTES.ADMIN_LOGIN);
   return await addProductPage(request);
 };
 
@@ -79,8 +82,6 @@ export default function AdminAddProduct() {
     actionData && actionData.hasError
       ? (actionData?.body?.error?.message as string)
       : (actionData?.message as string);
-
-  console.log({ actionData });
 
   return (
     <div className="">

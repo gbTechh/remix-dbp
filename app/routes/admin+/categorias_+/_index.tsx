@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Form, useActionData, useLoaderData, useLocation, useNavigate } from '@remix-run/react';
+import { Form, redirect, useActionData, useLoaderData, useLocation, useNavigate } from '@remix-run/react';
 import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { IoAdd } from "react-icons/io5";
 import { Alert, Button, IActionOption, ModalDelete, Spacer, Table, Text } from '~/components';
 import { ROUTES } from '~/utils';
-import { listCategories } from '~/features';
+import { actionDeleteCategory, listCategories, verifyAuth } from '~/features';
 
 
 
@@ -19,11 +19,13 @@ const headers = [
 ]
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
+  const isAuth = await verifyAuth(request);
+  if (!isAuth) return redirect(ROUTES.ADMIN_LOGIN);
   return listCategories(request);
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-
+  return await actionDeleteCategory(request);
 };
 
 export default function AdminCategory() {
@@ -58,7 +60,7 @@ export default function AdminCategory() {
       ...e,
       image: (
         <img
-          src={e.image || "/images/no-image.jpg"}
+          src={e.image}
           alt={e.name}
           width={40}
           height={40}
@@ -68,20 +70,19 @@ export default function AdminCategory() {
     };
   })
 
-
   return (
     <div className="">
       {success && (
         <Alert title='Acción realizada con éxito' message={messageAlert} type="success" duration={3000} />
       )}
-      {/* {actionData && (
+      {actionData && (
         <Alert
           message={actionData.body?.error?.message as string}
           type={`${actionData.hasError ? "error" : "success"}`}
           title={actionData.message as string}
           duration={3000}
         />
-      )} */}
+      )}
       <div className="flex">
         <div className="w-full">
           <Spacer y={4} />

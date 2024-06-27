@@ -7,69 +7,88 @@ import {
   unstable_createMemoryUploadHandler as createMemoryUploadHandler,
   unstable_parseMultipartFormData as parseMultipartFormData,
 } from "@remix-run/node";
-import { CategoryServices } from "../Category.services";
-import { PrismaCategoryRepository } from "../model";
-import { PATH_CATEGORIES, deleteExistingImage, handleResponse, prismaErrors } from "~/features/common";
-import { ICategoryFormOrUpdate } from "~/interfaces";
+
+
+import { PATH_CATEGORIES, PATH_PRODUCT, deleteExistingImage, handleResponse, prismaErrors } from "~/features/common";
+import { ICategoryFormOrUpdate, IProductFormOrUpdate } from "~/interfaces";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { ProductServices } from "../Product.services";
+import { PrismaProductRepository } from "../model";
 
 
 
-export const actionEditCategory = async (
+export const actionEditProduct = async (
   request: Request,
-  categoryId: number
+  productId: number
 ) => {
 
   if (
-    typeof Number(categoryId) !== "number" ||
-    isNaN(Number(categoryId)) ||
-    Number(categoryId) <= 0
+    typeof Number(productId) !== "number" ||
+    isNaN(Number(productId)) ||
+    Number(productId) <= 0
   ) {
-    return redirect(ROUTES.CATEGORY);
+    return redirect(ROUTES.PRODUCT);
   }
 
  
   const requestClone = request.clone();
   const requestData = await requestClone.formData();
   const image = requestData.get("image");
-  const category = new CategoryServices(new PrismaCategoryRepository());
+  const product = new ProductServices(new PrismaProductRepository());
 
-  let data: ICategoryFormOrUpdate = {}
+  let data: IProductFormOrUpdate = {}
   if (image && typeof image === "object" && "size" in image) {
     const file = image as File;
-    console.log({file})
     if (file.size === 0) {      
       data = {
         name: requestData.get("name") as string,
         slug: requestData.get("slug") as string,
+        categoryId: Number(requestData.get("categoryId")) as number,
+        description: requestData.get("description") as string,
+        shortDescription: requestData.get("shortDescription") as string,
+        price: Number(requestData.get("price")) as number,
+        discountPrice: Number(requestData.get("discountPrice")) as number,
+        rating: Number(requestData.get("rating")) as number,
       };
     } else {  
-      const categoryById = await category.getCategoryById(categoryId);   
-      if (categoryById?.nameImage) {
-        await deleteExistingImage(categoryById.nameImage, PATH_CATEGORIES);
+      const productById = await product.getProductById(productId);   
+      if (productById?.mainImage) {
+        await deleteExistingImage(productById.mainImage, PATH_PRODUCT);
       }
       const formData = await handleFile(request);
       data = {
         name: formData.get("name") as string,
         slug: formData.get("slug") as string,
-        image: formData.get("image") as string,
+        mainImage: formData.get("mainImage") as string,
+        categoryId: Number(formData.get("categoryId")) as number,
+        description: formData.get("description") as string,
+        shortDescription: formData.get("shortDescription") as string,
+        price: Number(formData.get("price")) as number,
+        discountPrice: Number(formData.get("discountPrice")) as number,
+        rating: Number(formData.get("rating")) as number,
       };
     }
   } else {
-     data = {
-       name: requestData.get("name") as string,
-       slug: requestData.get("slug") as string,
-     };
+    data = {
+    name: requestData.get("name") as string,
+    slug: requestData.get("slug") as string,
+    categoryId: Number(requestData.get("categoryId")) as number,
+    description: requestData.get("description") as string,
+    shortDescription: requestData.get("shortDescription") as string,
+    price: Number(requestData.get("price")) as number,
+    discountPrice: Number(requestData.get("discountPrice")) as number,
+    rating: Number(requestData.get("rating")) as number,
+    };
   }
  
-  return editCategoryActionResponse(data, categoryId)
+  return editProductActionResponse(data, productId);
 };
 
 
 const handleFile = async (request: Request) => {
   const uploadHandler = composeUploadHandlers(
     createFileUploadHandler({
-      directory: PATH_CATEGORIES,
+      directory: PATH_PRODUCT,
       maxPartSize: 2_000_000,
       file({ filename }) {
         filename = filename.replaceAll(" ", "-");
@@ -94,17 +113,17 @@ const handleFile = async (request: Request) => {
 
 
 
-export const editCategoryActionResponse = async (
-  data: ICategoryFormOrUpdate,
-  categoryId: number | null
+export const editProductActionResponse = async (
+  data: IProductFormOrUpdate,
+  productId: number | null
 ) => {
   try {
     
-    if (categoryId) {
-       const category = new CategoryServices(new PrismaCategoryRepository());
-      const updatedCategory = await category.updateCategory(
+    if (productId) {
+      const product = new ProductServices(new PrismaProductRepository());
+      const updatedCategory = await product.updateCategory(
         data,
-        categoryId,
+        productId,
       );
 
       if (updatedCategory.data === null) {
@@ -120,7 +139,7 @@ export const editCategoryActionResponse = async (
       } else {
         return handleResponse(
           {
-            message: "Categoria editada con éxito",
+            message: "Producto editado con éxito",
             hasError: false,
             state: "finished",
             body: updatedCategory,
@@ -129,7 +148,7 @@ export const editCategoryActionResponse = async (
         );
       }
     } else {
-      return redirect(ROUTES.CATEGORY);
+      return redirect(ROUTES.PRODUCT);
     }
   } catch (error: unknown) {
     const message = prismaErrors(error as PrismaClientKnownRequestError);

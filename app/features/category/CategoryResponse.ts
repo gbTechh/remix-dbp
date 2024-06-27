@@ -7,6 +7,7 @@ export class CategoryResponse {
   name: string;
   slug: string;
   image: string;
+  nameImage: string;
 
   constructor({
     id,
@@ -17,6 +18,7 @@ export class CategoryResponse {
     this.id = id;
     this.name = name;
     this.slug = slug;
-    this.image = image ? `/uploads/${image}` : '';
+    this.image = image ? `/uploads/categories/${image}` : '/images/no-image.jpg';
+    this.nameImage = image ?? '';
   }
 }

@@ -1,18 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useRef, useState } from 'react';
-import { Form, useLoaderData, useNavigation, useActionData, useNavigate } from '@remix-run/react';
+import { Form, useLoaderData, useNavigation, useActionData, useNavigate, redirect } from '@remix-run/react';
 import { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/node';
 import { IoAdd } from 'react-icons/io5';
 import { useForm } from '~/hooks';
 import { ROUTES } from '~/utils';
-import { Alert, Box, Button, Input, ModalEdit, Select, Spacer, Text, Toggle } from '~/components';
-import { THandleResponse, actionEditCategory, listCategoryById } from '~/features';
-import { ICategory, ICategoryFormOrUpdate } from '~/interfaces';
+import { Alert, Box, Button, Input, OptionsProps, RichText, Select, Spacer, Text } from '~/components';
+import { THandleResponse, verifyAuth } from '~/features';
+import { ICategory, ICategoryFormOrUpdate, IProduct, IProductCreate, IProductFormOrUpdate } from '~/interfaces';
+import { actionEditProduct, listProductById } from '~/features/product';
 
 
 
 export const loader = async (context: LoaderFunctionArgs) => {
-  return await listCategoryById(context)
+  const isAuth = await verifyAuth(context.request);
+  if (!isAuth) return redirect(ROUTES.ADMIN_LOGIN);
+  return await listProductById(context);
 };
 
 // export function ErrorBoundary() {
@@ -26,49 +29,57 @@ export const loader = async (context: LoaderFunctionArgs) => {
 
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
+  console.log({action})
   const { id } = params
-  return await actionEditCategory(request, Number(id));
+  return await actionEditProduct(request, Number(id));
 };
 
 
 export default function AdminAddCategory() {
 
-  const categoryById = useLoaderData<typeof loader>();
+  const { productById, categories } = useLoaderData<typeof loader>();
 
-  const { name, slug, image, onChange, changeData } = useForm({
-    name: categoryById?.name,
-    slug: categoryById?.slug,
-    image: categoryById?.image,
+  const { name, slug, categoryId, description, discountPrice, mainImage, price, rating, shortDescription, onChange, changeData } = useForm<IProductCreate>({
+    name: productById?.name!,
+    slug: productById?.slug!,
+    categoryId: productById.categoryId!,
+    description: productById.description!,
+    shortDescription: productById.shortDescription!,
+    discountPrice: productById.discountPrice!,
+    mainImage: productById.mainImage!,
+    price: productById.price!,
+    rating: productById.rating!,
+    secondaryImages: ''
   });
 
-  const [imageState, setImageState] = useState<string>(image);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setImagePreview(URL.createObjectURL(file));
-      setImageState(file.name); // Set the filename or path as needed
-    }
-  };
+  const [valueName, setValueName] = useState<string>(productById?.name ?? '');
+  const [contentSlug, setContentSlug] = useState<string>(productById?.slug ?? '');
+  const [descriptionState, setDescriptionState] = useState<string>(
+    productById.description ?? ''
+  );
+  const [shortDescriptionState, setShortDescriptionState] = useState<string>(
+    productById?.shortDescription ?? ""
+  );
 
 
   const transition = useNavigation()
   // const actionData = useActionData<IHandleResponse>()
-  const actionData = useActionData<THandleResponse<ICategory, ICategoryFormOrUpdate>>()
-  console.log({actionData})
+  const actionData = useActionData<THandleResponse<IProduct, IProductFormOrUpdate>>()
+
+
   useEffect(() => {
-    if (name) {
-      const slug: string = name?.replaceAll(' ', '-')
-      changeData('slug', slug)
+    if (valueName) {
+      const slug: string = valueName?.replaceAll(" ", "-").toLowerCase();
+      setContentSlug(slug);
     }
-  }, [name])
+  }, [valueName]);
+
 
  
   const navigate = useNavigate();
   useEffect(() => {
     if (!actionData?.hasError && actionData?.message) {
-      navigate(ROUTES.CATEGORY, {
+      navigate(ROUTES.PRODUCT, {
         state: {
           success: true,
           id: actionData.body?.data?.id,
@@ -79,31 +90,33 @@ export default function AdminAddCategory() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actionData?.hasError])
 
- const refInputFile = useRef<HTMLInputElement>(null); 
-  const handleDeleteImage = () => {
-    if (refInputFile.current) {
-      refInputFile.current.value = "";
-      setImageState("");
-      setImagePreview(null);
-    }
-  };
 
+  const allCategoriesMappedToSelect: OptionsProps[] = categories.map((e) => {
+    return {
+      value: `${e.id}`,
+      valueText: e.name,
+    };
+  });
 
 
   return (
     <div className="">
-      <Form className="" method="POST" encType="multipart/form-data">
-        <Spacer y={4} />
-        <div className="w-full">
-          <Text size="md" type="title">
-            Editar la categoría
-          </Text>
-          <Spacer y={2} />
-          <Text size="xs" color="contrast" type="base">
-            Edita la categoría de tu tienda.
-          </Text>
-        </div>
-        <Spacer y={6} />
+      <Spacer y={4} />
+      <div className="w-full">
+        <Text size="md" type="title">
+          Editar un producto
+        </Text>
+        <Spacer y={2} />
+        <Text size="xs" color="contrast" type="base">
+          Editar el producto de la tienda.
+        </Text>
+      </div>
+      <Spacer y={12} />
+      <Form
+        className="flex flex-wrap gap-4"
+        method="POST"
+        encType="multipart/form-data"
+      >
         <div className="flex items-center justify-end w-full">
           <Button
             size="large"
@@ -113,77 +126,153 @@ export default function AdminAddCategory() {
             disabled={transition.state === "submitting"}
           >
             <IoAdd />
-            Editar categoría
+            Editar producto
           </Button>
         </div>
-        <Spacer y={6} />
-        <div className="flex flex-wrap gap-4">
-          <Box
-            nobg
-            w="w-8/12"
-            className="flex flex-col flex-wrap flex-grow-[2] gap-3 self-baseline"
-          >
-            <div className="flex items-center w-full flex-col gap-2">
-              <div className="grid form-2-cols justify-between w-full gap-2">
-                <Input
-                  label="Nombres"
-                  className="w-full"
-                  name="name"
-                  value={name}
-                  onChange={(ev) => {
-                    onChange(ev);
-                  }}
-                  error={actionData?.body?.error?.body?.name}
-                />
-                <Input
-                  label="Slug"
-                  className="w-full"
-                  name="slug"
-                  value={slug}
-                  onChange={(ev) => {
-                    onChange(ev);
-                  }}
-                  error={actionData?.body?.error?.body?.slug}
-                />
-              </div>
-            </div>
-          </Box>
-          <Box
-            nobg
-            w="w-3/12"
-            className="flex flex-col flex-wrap flex-grow-[2] gap-3 w-3/7 min-w-[300px] w-3/12 overflow-hidden"
-          >
-            <Text size="sm">Editar imagen:</Text>
-            <div className="w-32 h-32 relative aspect-square">
-              <img
-                className="object-cover w-full h-full aspect-square rounded-lg"
-                src={imagePreview || `${imageState || "/images/no-image.jpg"}`}
+        <Box
+          w="min-w-[65%] w-8/12"
+          nobg
+          className=" flex flex-col flex-wrap flex-grow-[2] gap-3  self-baseline"
+        >
+          <div className="flex items-center w-full flex-col gap-2">
+            <div className="grid form-2-cols justify-between w-full gap-2">
+              <Input
+                label="Nombre"
+                className="w-full"
+                name="name"
+                value={valueName}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setValueName(e.target.value);
+                }}
+                error={actionData?.body?.error?.body?.name}
               />
-              {imageState !== "" && (
-                <div className="bg-black/80 opacity-0 hover:opacity-100 grid place-items-center w-full h-full absolute top-0 left-0">
-                  <Text
-                    color="error"
-                    as="button"
-                    className="w-full h-full"
-                    onClick={handleDeleteImage}
-                  >
-                    Eliminar
-                  </Text>
-                </div>
-              )}
+              <Input
+                label="Slug"
+                className="w-full lowercase"
+                placeholder="pizza-hawaiana"
+                name="slug"
+                value={contentSlug}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setContentSlug(
+                    e.target.value.replaceAll(" ", "-").toLowerCase()
+                  );
+                }}
+                error={actionData?.body?.error?.body?.slug}
+              />
             </div>
-            <Spacer y={1} />
-
+            <Spacer y={4} />
+            <div className="justify-between w-full gap-2">
+              <RichText
+                label="Descripción"
+                name="description"
+                value={descriptionState}
+                onChange={(e) => {
+                  setDescriptionState(e.target.value);
+                }}
+              />
+            </div>
+            <div className="justify-between w-full gap-2">
+              <RichText
+                label="Descripción Corta"
+                name="shortDescription"
+                value={shortDescriptionState}
+                onChange={(e) => {
+                  setShortDescriptionState(e.target.value);
+                }}
+              />
+            </div>
+            <Spacer y={4} />
+            <div className="grid form-2-cols justify-between w-full gap-2">
+              <Input
+                label="Precio Normal"
+                className="w-full"
+                placeholder="109.00"
+                name="price"
+                value={price!}
+                onChange={(e) => onChange(e)}
+                error={actionData?.body?.error?.body?.price as any}
+                type="number"
+                step="0.01"
+              />
+              <Input
+                label="Precio descuento"
+                className="w-full"
+                placeholder="99.90"
+                name="discountPrice"
+                value={discountPrice!}
+                onChange={(e) => onChange(e)}
+                type="number"
+                step="0.01"
+                error={actionData?.body?.error?.body?.discountPrice as any}
+              />
+            </div>
+            <Spacer y={4} />
+            <div className="grid form-2-cols justify-between w-full gap-2">
+              <Input
+                label="Rating"
+                className="w-full"
+                placeholder="5"
+                name="rating"
+                type="number"
+                value={rating!}
+                onChange={(e) => onChange(e)}
+                maxLength={5}
+                minLength={0}
+                error={actionData?.body?.error?.body?.rating as any}
+              />
+            </div>
+          </div>
+        </Box>
+        <Box
+          w="min-w-[300px] w-3/12"
+          nobg
+          className="flex flex-col flex-wrap flex-grow-[2] gap-3  self-baseline"
+        >
+          <Spacer y={2} />
+          <Select
+            arrOptions={allCategoriesMappedToSelect}
+            defaultValue="Seleccionar categoría"
+            label="Categoría"
+            className="w-full"
+            name="categoryId"
+            value={`${categoryId}`}
+            onChange={(ev) => {
+              onChange(ev);
+            }}
+            error={actionData?.body?.error?.body?.categoryId as any}
+          />
+          <Spacer y={4} />
+          <div>
+            <label htmlFor="mainImage">
+              <Text as="span" size="sm">
+                Imagen Principal
+              </Text>
+            </label>
+            <Spacer y={4} />
             <input
-              ref={refInputFile}
               type="file"
-              name="image"
-              onChange={handleFileChange}
-              className="text-white text-[14px]"
+              name="mainImage"
+              id="mainImage"
+              className="w-full text-white text-[14px]"
             />
-          </Box>
-        </div>
-        <input type="hidden" value={categoryById!.id} name="id" />
+          </div>
+          <Spacer y={4} />
+          <div>
+            <label htmlFor="secondaryImages">
+              <Text as="span" size="sm">
+                Imagenes Secundarias
+              </Text>
+            </label>
+            <Spacer y={4} />
+            <input
+              multiple
+              type="file"
+              name="secondaryImages"
+              id="secondaryImages"
+              className="w-full text-white text-[14px]"
+            />
+          </div>
+        </Box>
       </Form>
       {actionData?.hasError === true && (
         <Alert

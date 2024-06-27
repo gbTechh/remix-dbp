@@ -1,7 +1,7 @@
 import { ICategoryFormOrUpdate } from "~/interfaces";
 import { CategoryServices } from "../Category.services";
 import { PrismaCategoryRepository } from "../model";
-import { FormDataRequest, handleResponse } from "~/features/common";
+import { FormDataRequest, PATH_CATEGORIES, handleResponse } from "~/features/common";
 import {
   json,
   unstable_composeUploadHandlers as composeUploadHandlers,
@@ -13,14 +13,7 @@ import {
 
 
 export const actionAddCategory = async (request: Request) => {
-  // const hasPermission = await verifyRolAndAuth(
-  //   request,
-  //   MODULES_CODE.ADD_CATEGORY
-  // );
-  // if (!hasPermission) {
-  //   return redirect(ROUTES.BIENVENIDA);
-  // }
-  
+
   const formData = await handleFile(request);
 
   // const data = await FormDataRequest<ICategoryFormOrUpdate>(request, ["name","slug"]);
@@ -37,7 +30,7 @@ export const actionAddCategory = async (request: Request) => {
 const handleFile = async (request: Request) => {
   const uploadHandler = composeUploadHandlers(
     createFileUploadHandler({
-      directory: "public/uploads",
+      directory: PATH_CATEGORIES,
       maxPartSize: 2_000_000,
       file({ filename }) {
         filename = filename.replaceAll(" ", "-");

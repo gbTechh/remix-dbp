@@ -15,8 +15,7 @@ export const listCategories = async (
   //   return redirect(ROUTES.BIENVENIDA);
   // }
 
-  const isAuth = await verifyAuth(request);
-  if (!isAuth) return redirect(ROUTES.ADMIN_LOGIN);
+
   
   const category = new CategoryServices(new PrismaCategoryRepository());
   const categories = await category.getCategories();

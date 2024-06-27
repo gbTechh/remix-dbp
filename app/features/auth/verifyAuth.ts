@@ -4,10 +4,9 @@ import { authenticator } from "./auth.service";
 
 export const verifyAuth = async (request: Request) => {
   const user = (await authenticator.isAuthenticated(request)) as IAuthStaff;
- 
-  if (user?.role !== IRole.ADMIN) {
-    return false;
+  if (user?.id) {
+    return true;
   }
 
-  return true;
+  return false;
 };

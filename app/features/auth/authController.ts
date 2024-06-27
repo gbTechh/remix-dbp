@@ -7,13 +7,13 @@ export const authStaff = async (email: string, password: string) => {
   const user = await authRepository.authStaff(email);
 
   if (!user) {
-    return "Usuario no encontrado";
+    return "Credenciales incorrectas";
   }
 
   const passwardCompared = await bcrypt.compare(password, user.password);
 
   if (!passwardCompared) {
-    return "Error de credenciales";
+    return false;
   }
 
   const response = mappedResponseAuthStaffData(user);
